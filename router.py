@@ -22,11 +22,15 @@ def query_ai(query):
         ]
     })
     )
-    return response.json()
+    return response.text
 
 
-def extract_content(response_json):
-    return response_json['choices'][0]['message']['content']
+def extract_content(response_text):
+    data = json.loads(response_text)
+    try:
+        return data['choices'][0]['message']['content']
+    except:
+        return response_text
 
 
 if __name__ == '__main__':
