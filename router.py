@@ -25,7 +25,11 @@ def query_ai(query):
     return response.json()
 
 
+def extract_content(response_json):
+    return response_json['choices'][0]['message']['content']
+
+
 if __name__ == '__main__':
     data = query_ai("What is the meaning of life?")
-    message_content = data['choices'][0]['message']['content']
+    message_content = extract_content(data)
     print(message_content)
