@@ -4,6 +4,7 @@ import telebot
 import traceback
 
 import router as rt
+import utils as ut
 
 from auth import *
 
@@ -52,7 +53,7 @@ def send_help(message):
 - /roll6: Бросить шестигранный кубик (от 1 до 6).
 - /roll10: Бросить десятигранный кубик (от 1 до 10).
 - /roll20: Бросить двадцатигранный кубик (от 1 до 20).
-- Напиши любое сообщение, и я его повторю!\
+- Или просто напиши любое сообщение, и я постараюсь дать подходящий ответ!\
 """
     )
 
@@ -86,15 +87,18 @@ def roll20(message):
     result = random.randint(1, 20)
     bot.reply_to(message, f"Двадцатигранный кубик: {result}! 🎲")
 
-# Любое другое сообщение (задействуем ИИ)
+# Любое другое сообщение (задействуем сторонний ИИ)
 @bot.message_handler(func=lambda message: True)
 def reply(message):
-    reply = rt.generate_ai_response(message.text)
-    try:
-        bot.send_message(message.chat.id, reply)
-    except Exception:
-        traceback.print_exc()
-        bot.send_message(message.chat.id, 'Это слишком сложно для меня! Прости, пожалуйста!')
+    reply_text = rt.generate_ai_response(message.text)
+    reply_chunks = ut.split_message(reply_text)
+    # a text not exceeding TG's limit will be sent entirely in the first and only chunk
+    for chunk in reply_chunks:   
+        try:
+            bot.send_message(message.chat.id, chunk)
+        except Exception:
+            traceback.print_exc()
+            bot.send_message(message.chat.id, 'Это слишком сложно для меня! Прости, пожалуйста...')
 
 print('starting up!')
 
