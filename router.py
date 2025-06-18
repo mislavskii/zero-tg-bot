@@ -31,7 +31,11 @@ def extract_content(response_text):
         return data['choices'][0]['message']['content']
     except:
         return response_text
+    
 
+def generate_ai_response(query):
+    ai_response = query_ai(query)
+    return extract_content(ai_response)
 
 if __name__ == '__main__':
     data = query_ai("What is the meaning of life?")

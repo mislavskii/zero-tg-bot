@@ -85,16 +85,15 @@ def roll20(message):
     result = random.randint(1, 20)
     bot.reply_to(message, f"Двадцатигранный кубик: {result}! 🎲")
 
-# Любое другое сообщение (Эхо-функция)
+# Любое другое сообщение (задействуем ИИ)
 @bot.message_handler(func=lambda message: True)
-# def echo_message(message):
-#     if "привет" in message.text.lower():
-#         bot.send_message(message.chat.id, "Ты со мной поздоровался? Привет! 👋")
-#     else:
-#         bot.send_message(message.chat.id, message.text)
 def reply(message):
-    reply = rt.extract_content(rt.query_ai(message.text))
-    bot.send_message(message.chat.id, reply)
+    reply = rt.generate_ai_response(message.text)
+    try:
+        bot.send_message(message.chat.id, reply)
+    except Exception as ex:
+        print(ex)
+        bot.send_message(message.chat.id, 'Это слишком сложно для меня! Прости, пожалуйста!')
 
 print('starting up!')
 
