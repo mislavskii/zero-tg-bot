@@ -2,6 +2,8 @@ import random
 import telebot.version
 import telebot
 
+import router as rt
+
 from auth import *
 
 print('Hello, zerocoders!')
@@ -85,11 +87,14 @@ def roll20(message):
 
 # Любое другое сообщение (Эхо-функция)
 @bot.message_handler(func=lambda message: True)
-def echo_message(message):
-    if "привет" in message.text.lower():
-        bot.send_message(message.chat.id, "Ты со мной поздоровался? Привет! 👋")
-    else:
-        bot.send_message(message.chat.id, message.text)
+# def echo_message(message):
+#     if "привет" in message.text.lower():
+#         bot.send_message(message.chat.id, "Ты со мной поздоровался? Привет! 👋")
+#     else:
+#         bot.send_message(message.chat.id, message.text)
+def reply(message):
+    reply = rt.extract_content(rt.query_ai(message))
+    bot.send_message(message.chat_id, reply)
 
 
 bot.infinity_polling()
