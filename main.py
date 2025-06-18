@@ -93,8 +93,9 @@ def roll20(message):
 #     else:
 #         bot.send_message(message.chat.id, message.text)
 def reply(message):
-    reply = rt.extract_content(rt.query_ai(message))
-    bot.send_message(message.chat_id, reply)
+    reply = rt.extract_content(rt.query_ai(message.text))
+    bot.send_message(message.chat.id, reply)
 
+print('starting up!')
 
 bot.infinity_polling()
