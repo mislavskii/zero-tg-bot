@@ -1,6 +1,7 @@
 import random
 import telebot.version
 import telebot
+import traceback
 
 import router as rt
 
@@ -91,8 +92,8 @@ def reply(message):
     reply = rt.generate_ai_response(message.text)
     try:
         bot.send_message(message.chat.id, reply)
-    except Exception as ex:
-        print(ex)
+    except Exception:
+        traceback.print_exc()
         bot.send_message(message.chat.id, 'Это слишком сложно для меня! Прости, пожалуйста!')
 
 print('starting up!')
