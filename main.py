@@ -90,7 +90,12 @@ def roll20(message):
 # Любое другое сообщение (задействуем сторонний ИИ)
 @bot.message_handler(func=lambda message: True)
 def reply(message):
+    # Отправляем предварительное сообщение пользователю
+    preparation_message = bot.send_message(message.chat.id, "Идет подготовка ответа...")
+    # Генерируем ответ
     reply_text = rt.generate_ai_response(message.text)
+    # Удаляем сообщение "Идет подготовка ответа..."
+    bot.delete_message(message.chat.id, preparation_message.message_id)
     reply_chunks = ut.split_message(reply_text)
     # a text not exceeding TG's limit will be sent entirely in the first and only chunk
     for chunk in reply_chunks:   
@@ -99,6 +104,30 @@ def reply(message):
         except Exception:
             traceback.print_exc()
             bot.send_message(message.chat.id, 'Это слишком сложно для меня! Прости, пожалуйста...')
+
+# @bot.message_handler(func=lambda message: True)
+# def reply(message):
+#     # Отправляем предварительное сообщение пользователю
+#     preparation_message = bot.send_message(message.chat.id, "Идет подготовка ответа...")
+    
+#     try:
+#         # Генерируем ответ
+#         reply_text = rt.generate_ai_response(message.text)
+#         reply_chunks = ut.split_message(reply_text)
+        
+#         # Удаляем сообщение "Идет подготовка ответа..."
+#         bot.delete_message(message.chat.id, preparation_message.message_id)
+
+#         # Отправляем ответ частями, если необходимо
+#         for chunk in reply_chunks:
+#             bot.send_message(message.chat.id, chunk)
+#     except Exception:
+#         # Если произошла ошибка, удаляем сообщение "Идет подготовка ответа..."
+#         bot.delete_message(message.chat.id, preparation_message.message_id)
+        
+#         # Логируем ошибку и отправляем сообщение об ошибке пользователю
+#         traceback.print_exc()
+#         bot.send_message(message.chat.id, 'Это слишком сложно для меня! Прости, пожалуйста...')
 
 print('starting up!')
 
