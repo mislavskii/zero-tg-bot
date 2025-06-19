@@ -1,3 +1,4 @@
+import os
 import random
 import telebot.version
 import telebot
@@ -6,7 +7,11 @@ import traceback
 import router as rt
 import utils as ut
 
+from tts.yask.ya_tts import text2file
+
 from auth import *
+
+AUDIO_FILENAME = 'files/speech.ogg'
 
 print('Hello, zerocoders!')
 print('telebot version:', telebot.version.__version__)
@@ -91,7 +96,10 @@ def roll20(message):
 @bot.message_handler(func=lambda message: True)
 def reply(message):
     # Отправляем предварительное сообщение пользователю
-    preparation_message = bot.send_message(message.chat.id, "Идет подготовка ответа...")
+    try:
+        preparation_message = bot.send_message(message.chat.id, "Идет подготовка ответа...")
+    except:
+        preparation_message = bot.send_message(message.chat.id, "Идет подготовка ответа...")
     # Генерируем ответ
     reply_text = rt.generate_ai_response(message.text)
     # Удаляем сообщение "Идет подготовка ответа..."
@@ -104,31 +112,12 @@ def reply(message):
         except Exception:
             traceback.print_exc()
             bot.send_message(message.chat.id, 'Это слишком сложно для меня! Прости, пожалуйста...')
-
-# @bot.message_handler(func=lambda message: True)
-# def reply(message):
-#     # Отправляем предварительное сообщение пользователю
-#     preparation_message = bot.send_message(message.chat.id, "Идет подготовка ответа...")
-    
-#     try:
-#         # Генерируем ответ
-#         reply_text = rt.generate_ai_response(message.text)
-#         reply_chunks = ut.split_message(reply_text)
-        
-#         # Удаляем сообщение "Идет подготовка ответа..."
-#         bot.delete_message(message.chat.id, preparation_message.message_id)
-
-#         # Отправляем ответ частями, если необходимо
-#         for chunk in reply_chunks:
-#             bot.send_message(message.chat.id, chunk)
-#     except Exception:
-#         # Если произошла ошибка, удаляем сообщение "Идет подготовка ответа..."
-#         bot.delete_message(message.chat.id, preparation_message.message_id)
-        
-#         # Логируем ошибку и отправляем сообщение об ошибке пользователю
-#         traceback.print_exc()
-#         bot.send_message(message.chat.id, 'Это слишком сложно для меня! Прости, пожалуйста...')
+    # Отправка озвучки
+    if reply_text and len(reply_text) < 555:
+        if text2file(YA_FID, YA_KEY, reply_text, output=AUDIO_FILENAME):
+            print('sending voice')
+            with open(AUDIO_FILENAME, "rb") as audio_file:
+                bot.send_voice(message.chat.id, audio_file)
 
 print('starting up!')
-
 bot.infinity_polling()
